@@ -1,7 +1,12 @@
 webcp
 =====
 
-Copy a subtree of a web site, with smart URL filters
+Copy a subtree of a web site, with smart page filters. Distinctive features:
+
+- Crawl pages without saving them, in order to discover links to the pages you really want.
+- Automatically crawl from the Internet Archive instead of the live site (please be nice to the Archive!)
+
+__WORK IN PROGRESS:__ This program is not yet ready to use. If you're interested, 
 
 Compiling
 ---------
