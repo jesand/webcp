@@ -6,26 +6,26 @@ Copy a subtree of a web site, with smart URL filters
 Compiling
 ---------
 
-  go get -t github.com/jesand/webcp
-  go test github.com/jesand/webcp/...
-  go install github.com/jesand/webcp
+    go get -t github.com/jesand/webcp
+    go test github.com/jesand/webcp/...
+    go install github.com/jesand/webcp
 
 Usage Examples
 --------------
 
 See the usage notes:
 
-  webcp -h
+    webcp -h
 
 Download a URL and its sub-pages into the current directory:
 
-  webcp <url>
+    webcp <url>
 
 By default, the crawl will fetch all linked pages up to a depth of 5, and will delay 5 seconds between subsequent requests to the same domain.
 
 If you have a large crawl that you might need to kill and later resume, you can do that by providing a resume file:
 
-  webcp <url> --resume=links.txt
+    webcp <url> --resume=links.txt
 
 Planned Enhancements
 --------------------
