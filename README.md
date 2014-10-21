@@ -19,13 +19,13 @@ See the usage notes:
 
 Download a URL and its sub-pages into the current directory:
 
-    webcp <url>
+    webcp <url> .
 
 By default, the crawl will fetch all linked pages up to a depth of 5, and will delay 5 seconds between subsequent requests to the same domain.
 
 If you have a large crawl that you might need to kill and later resume, you can do that by providing a resume file:
 
-    webcp <url> --resume=links.txt
+    webcp --resume=links.txt <url> .
 
 Planned Enhancements
 --------------------

@@ -17,17 +17,16 @@ func TestParseArgs(t *testing.T) {
 	)
 	var (
 		URL_URL, _ = url.Parse(URL)
-		WD, _      = os.Getwd()
 		tmp        string
 	)
 
 	Convey("Given just an absolute URL", t, func() {
-		crawler, err := ParseArgs([]string{URL})
+		crawler, err := ParseArgs([]string{URL, "."})
 		Convey("The correct defaults are applied", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -39,26 +38,26 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given a relative URL", t, func() {
-		_, err := ParseArgs([]string{"/path/to/file.html"})
+		_, err := ParseArgs([]string{"/path/to/file.html", "."})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
 	})
 
 	Convey("Given an invalid URL", t, func() {
-		_, err := ParseArgs([]string{""})
+		_, err := ParseArgs([]string{"", "."})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
 	})
 
 	Convey("Given a valid delay", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--delay=1"})
+		crawler, err := ParseArgs([]string{URL, ".", "--delay=1"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    1 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -70,14 +69,14 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given a non-int delay", t, func() {
-		_, err := ParseArgs([]string{URL, "--delay=monkey"})
+		_, err := ParseArgs([]string{URL, ".", "--delay=monkey"})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
 	})
 
 	Convey("Given a negative delay", t, func() {
-		_, err := ParseArgs([]string{URL, "--delay=-1"})
+		_, err := ParseArgs([]string{URL, ".", "--delay=-1"})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
@@ -89,7 +88,7 @@ func TestParseArgs(t *testing.T) {
 			os.RemoveAll(tmp)
 		})
 		folder := filepath.Join(tmp, "newfolder")
-		crawler, err := ParseArgs([]string{URL, "--folder=" + folder})
+		crawler, err := ParseArgs([]string{URL, folder})
 
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
@@ -118,7 +117,7 @@ func TestParseArgs(t *testing.T) {
 		})
 		folder := filepath.Join(tmp, "oldfolder")
 		So(os.MkdirAll(folder, 0777), ShouldBeNil)
-		crawler, err := ParseArgs([]string{URL, "--folder=" + folder})
+		crawler, err := ParseArgs([]string{URL, folder})
 
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
@@ -141,19 +140,19 @@ func TestParseArgs(t *testing.T) {
 			os.RemoveAll(tmp)
 		})
 		folder := filepath.Join(tmp, "invalid:\x00folder")
-		_, err := ParseArgs([]string{URL, "--folder=" + folder})
+		_, err := ParseArgs([]string{URL, folder})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
 	})
 
 	Convey("Given a positive max depth", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--max-depth=1"})
+		crawler, err := ParseArgs([]string{URL, ".", "--max-depth=1"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      1,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -165,12 +164,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given a zero max depth", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--max-depth=0"})
+		crawler, err := ParseArgs([]string{URL, ".", "--max-depth=0"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      0,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -182,14 +181,14 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given a non-int max depth", t, func() {
-		_, err := ParseArgs([]string{URL, "--max-depth=monkey"})
+		_, err := ParseArgs([]string{URL, ".", "--max-depth=monkey"})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
 	})
 
 	Convey("Given a negative max depth", t, func() {
-		_, err := ParseArgs([]string{URL, "--max-depth=-1"})
+		_, err := ParseArgs([]string{URL, ".", "--max-depth=-1"})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})
@@ -201,12 +200,12 @@ func TestParseArgs(t *testing.T) {
 			os.RemoveAll(tmp)
 		})
 		resume := filepath.Join(tmp, "newfile")
-		crawler, err := ParseArgs([]string{URL, "--resume=" + resume})
+		crawler, err := ParseArgs([]string{URL, ".", "--resume=" + resume})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        resume,
 				Seed:          URL_URL,
@@ -225,13 +224,13 @@ func TestParseArgs(t *testing.T) {
 		resume, err := ioutil.TempFile(tmp, "resume")
 		So(err, ShouldBeNil)
 		resume.Close()
-		crawler, err := ParseArgs([]string{URL, "--resume=" + resume.Name()})
+		crawler, err := ParseArgs([]string{URL, ".", "--resume=" + resume.Name()})
 
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        resume.Name(),
 				Seed:          URL_URL,
@@ -243,12 +242,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--wayback"})
+		crawler, err := ParseArgs([]string{URL, ".", "--wayback"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -260,12 +259,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given -w", t, func() {
-		crawler, err := ParseArgs([]string{URL, "-w"})
+		crawler, err := ParseArgs([]string{URL, ".", "-w"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -277,12 +276,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback-after and --wayback", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--wayback", "--wayback-after=2014"})
+		crawler, err := ParseArgs([]string{URL, ".", "--wayback", "--wayback-after=2014"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -294,12 +293,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback-after", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--wayback-after=2014"})
+		crawler, err := ParseArgs([]string{URL, ".", "--wayback-after=2014"})
 		Convey("The argument is ignored", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -311,12 +310,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback-before and --wayback", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--wayback", "--wayback-before=2014"})
+		crawler, err := ParseArgs([]string{URL, ".", "--wayback", "--wayback-before=2014"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -328,12 +327,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback-before", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--wayback-before=2014"})
+		crawler, err := ParseArgs([]string{URL, ".", "--wayback-before=2014"})
 		Convey("The argument is ignored", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -345,12 +344,12 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback-before and --wayback-after and --wayback", t, func() {
-		crawler, err := ParseArgs([]string{URL, "--wayback", "--wayback-after=2013", "--wayback-before=2014"})
+		crawler, err := ParseArgs([]string{URL, ".", "--wayback", "--wayback-after=2013", "--wayback-before=2014"})
 		Convey("The crawler is correct", func() {
 			So(err, ShouldBeNil)
 			So(crawler, ShouldResemble, crawl.Crawler{
 				FetchDelay:    5 * time.Second,
-				Folder:        WD,
+				Folder:        ".",
 				MaxDepth:      5,
 				Resume:        "",
 				Seed:          URL_URL,
@@ -362,7 +361,7 @@ func TestParseArgs(t *testing.T) {
 	})
 
 	Convey("Given --wayback-before and --wayback-after out of order", t, func() {
-		_, err := ParseArgs([]string{URL, "--wayback", "--wayback-after=2014", "--wayback-before=2013"})
+		_, err := ParseArgs([]string{URL, ".", "--wayback", "--wayback-after=2014", "--wayback-before=2013"})
 		Convey("An error is returned", func() {
 			So(err, ShouldNotBeNil)
 		})

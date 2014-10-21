@@ -17,15 +17,15 @@ const (
 	USAGE      = SW_VERSION + ` - Smart site crawling
 
 Usage:
-  ` + SW + ` [-hw] <url> [--delay=<secs>] [--folder=<path>] [--max-depth=<num>]
+  ` + SW + ` [-hw] <url> <dest> [--delay=<secs>] [--max-depth=<num>]
     [--resume=<path>] [--wayback-after=<date>] [--wayback-before=<date>]
 
 All dates are in YYYY, YYYYMM, YYYYMMDD, or YYYYMMDDHHMMSS format.
 
 Options:
   <url>                    The seed URL from which crawling should begin.
+  <dest>                   The folder to which the crawl should be saved.
   --delay=<secs>           Time to wait between requests to a single domain [default: 5].
-  --folder=<path>          The folder to which the crawl should be saved.
   -h --help                Show these usage notes.
   --max-depth=<num>        Stop at this tree depth [default: 5].
   --resume=<path>          Save ongoing status, and resume any previous crawls.
@@ -54,7 +54,7 @@ func ParseArgs(argv []string) (crawler crawl.Crawler, reterr error) {
 	var (
 		delay, _               = args["--delay"].(string)
 		delaySecs, delayErr    = strconv.ParseFloat(delay, 64)
-		folder, _              = args["--folder"].(string)
+		folder, _              = args["<dest>"].(string)
 		depthStr, _            = args["--max-depth"].(string)
 		depth, depthErr        = strconv.Atoi(depthStr)
 		resume, _              = args["--resume"].(string)
@@ -79,11 +79,8 @@ func ParseArgs(argv []string) (crawler crawl.Crawler, reterr error) {
 	}
 
 	if folder == "" {
-		var err error
-		if folder, err = os.Getwd(); err != nil {
-			reterr = fmt.Errorf("Could not find the working directory. Please use --folder=<path>.")
-			return
-		}
+		reterr = fmt.Errorf("<dest> is required")
+		return
 	} else if reterr = os.MkdirAll(folder, 0777); reterr != nil {
 		return
 	}
