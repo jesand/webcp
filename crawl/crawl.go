@@ -1,3 +1,12 @@
+// The crawl package implements a web crawler with various distinctive features.
+// The Crawler type is the main entry point into the API. To run a crawl, simply
+// create a Crawler instance with appropriate field values and invoke its Run()
+// method.
+//
+// The queue of sites to crawl next (the "frontier") is stored in memory by
+// default, in an instance of MemQueueStorage. However, if you provide a value
+// for the Crawler's Resume field, FileQueueStorage will be used instead. This
+// provides both abort/resume functionality and reduces overall memory usage.
 package crawl
 
 import (
