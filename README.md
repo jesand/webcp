@@ -32,6 +32,12 @@ If you have a large crawl that you might need to kill and later resume, you can 
 
     webcp --resume=links.txt <url> .
 
+API
+---
+
+The command line interface described here is just a thin wrapper around the `Crawler` type in the `crawl` package. You can easily use the crawler component directly in some other program.  See the API reference on [godoc](https://godoc.org/github.com/jesand/webcp/crawl) for details.
+
+
 Planned Enhancements
 --------------------
 
